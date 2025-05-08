@@ -1,4 +1,5 @@
 {
-  "image": "ghcr.io/pascalkuthe/ferris_ci_build_x86_64-unknown-linux-gnu:latest",
+  // "image": "ghcr.io/pascalkuthe/ferris_ci_build_x86_64-unknown-linux-gnu:latest",
+  "image": "mcr.microsoft.com/devcontainers/rust:1",
   "features": {}
 }
