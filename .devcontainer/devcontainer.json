@@ -7,21 +7,11 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "llvm-vs-code-extensions.vscode-clangd",
-                "nefrob.vscode-just-syntax",
-                "ms-vscode.cmake-tools",
-                "ms-azuretools.vscode-docker"
+                "rust-lang.rust-analyzer"
             ],
             "settings": {
                 "workbench.editor.pinnedTabsOnSeparateRow": true,
-                "clangd.path": "/usr/bin/clangd",
                 "terminal.integrated.defaultProfile.linux": "zsh",
-                "clangd.arguments": [
-                    "--compile-commands-dir=${workspaceFolder}/build",
-                    "--background-index",
-                    "--clang-tidy",
-                    "--fallback-style=Google"
-                ],
                 "editor.inlayHints.enabled": "off",
                 "editor.formatOnSave": false
             }
