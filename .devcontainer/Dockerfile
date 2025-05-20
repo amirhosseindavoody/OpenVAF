@@ -32,6 +32,16 @@ RUN wget https://apt.llvm.org/llvm.sh && \
 # Install rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.65.0
 
+RUN add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get update && \
+    apt-get install -y \
+        python3.10 \
+        python3.10-dev \
+        python3.10-venv \
+        python3.10-distutils && \
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
+
 # # Clean up
 # RUN rm -rf /var/lib/apt/lists/* && \
 #     apt-get clean && \
