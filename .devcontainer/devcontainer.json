@@ -13,7 +13,8 @@
                 "workbench.editor.pinnedTabsOnSeparateRow": true,
                 "terminal.integrated.defaultProfile.linux": "zsh",
                 "editor.inlayHints.enabled": "off",
-                "editor.formatOnSave": false
+                "editor.formatOnSave": false,
+                "rust-analyzer.cachePriming.numThreads": 0
             }
         }
     }
