@@ -12,5 +12,5 @@ pub mod simulation;
 mod utils;
 mod veriloga;
 
-// #[cfg(all(test, not(windows)))]
-// mod tests;
+#[cfg(all(test, not(windows)))]
+mod tests;
