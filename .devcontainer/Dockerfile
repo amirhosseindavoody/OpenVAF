@@ -53,3 +53,4 @@ ENV RUSTUP_HOME=/root/.rustup
 ENV CC=clang
 ENV CXX=clang++
 ENV AR=llvm-ar
+ENV PYO3_PYTHON=/usr/bin/python
