@@ -137,3 +137,86 @@ fn veriloga() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+fn bsimcmg() -> Result<()> {
+    let mut arena = Arena::new();
+    let mut circ = Circuit::new("test_circ".to_owned(), &mut arena);
+
+    let gnd = circ.lookup_node("ground").expect("ground node");
+
+    let node_s = circ.node("S".to_owned());
+    let node_d = circ.node("D".to_owned());
+    let node_g = circ.node("G".to_owned());
+
+
+    let path = Utf8PathBuf::from_path_buf(project_root())
+        .expect("only utf8 paths are supported")
+        .join("integration_tests")
+        .join("BSIMCMG")
+        .join("bsimcmg.va");
+
+    println!("BSIMCMG Verilog-A path: {}", path);
+
+    circ.load_veriloga_file(path, &veriloga::Opts::default())?;
+    let (mos_instance, mos_model) =
+        circ.new_device_instance_by_name("mos".to_owned(), "bsimcmg_va", vec![node_d, node_g, node_s, gnd])?;
+
+    let (vd, _) =
+        circ.new_device_instance_by_name("vd".to_owned(), "vsource", vec![node_d, gnd])?;
+    let (vd_param, vd_expr) = arena.def_param(circ.ctx, "vdc".to_owned())?;
+
+    circ.set_instance_param(vd, "dc", vd_expr)?;
+    circ.set_instance_param(vd, "mag", 1.0.into())?;
+
+    let (vg, _) =
+        circ.new_device_instance_by_name("vg".to_owned(), "vsource", vec![node_g, gnd])?;
+    let (vg_param, vg_expr) = arena.def_param(circ.ctx, "vg".to_owned())?;
+    circ.set_instance_param(vg, "dc", vg_expr)?;
+    circ.set_instance_param(vg, "mag", 1.0.into())?;
+
+    let (vs, _) =
+        circ.new_device_instance_by_name("vs".to_owned(), "vsource", vec![node_s, gnd])?;
+    let (vs_param, vs_expr) = arena.def_param(circ.ctx, "vs".to_owned())?;
+    circ.set_instance_param(vs, "dc", vs_expr)?;
+    circ.set_instance_param(vs, "mag", 1.0.into())?;
+
+
+
+    let mut ctx = ExprEvalCtx::new(&arena);
+    ctx.set_param(CircuitParam::TEMPERATURE, 300.15.into());
+
+    // let vd_value: f64 = vd_expr.eval_num(ctx.borrow())?;
+    // println!("Default vd_value: {}", vd_value);
+
+    ctx.set_param(vd_param, 1.0.into());
+    ctx.set_param(vs_param, 0.into());
+    ctx.set_param(vg_param, 0.into());
+
+    let mut sim = circ.prepare_simulation(ctx.borrow(), &arena, SimConfig::default())?;
+
+
+
+    let currents = sim.dc_lead_current(mos_instance)?;
+    println!("MOS currents: {:?}", currents);
+
+    // ctx.set_param(vd_param, 1.5.into());
+    // sim.prepare_solver(ctx.borrow(), &arena)?;
+
+    // let currents = sim.dc_lead_current(mos_instance)?;
+    // println!("MOS currents: {:?}", currents);
+
+
+    println!("vg, id");
+    for vg_val in (0..=150).map(|i| i as f64 * 0.01) {
+        ctx.set_param(vg_param, vg_val.into());
+        sim.prepare_solver(ctx.borrow(), &arena)?;
+        let currents = sim.dc_lead_current(mos_instance)?;
+        // println!("vg = {:.2}, MOS currents: {:?}", vg_val, currents);
+        println!("{:?}, {:?}", vg_val, currents[0]);
+    }
+
+    
+
+    Ok(())
+}
